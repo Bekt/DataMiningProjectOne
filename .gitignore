@@ -1,0 +1,11 @@
+bin/
+out/
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+
+.DS_Store
+
+*.arff
