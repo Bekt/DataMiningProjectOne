@@ -51,7 +51,7 @@ public class BaselineLearner extends SupervisedLearner {
         return out;
     }
 
-    public static void nFoldCrossValidation(Matrix features, Matrix labels, int n) {
+    public static double nFoldCrossValidation(Matrix features, Matrix labels, int n) {
 
         int rows = features.getNumRows();
 
@@ -65,5 +65,25 @@ public class BaselineLearner extends SupervisedLearner {
         }
 
         int foldSize = rows % n == 0 ? rows / n : rows / n + 1;
+        double sum = 0;
+        for (int i = 0; i < n; i++) {
+            int foldStart = i * foldSize;
+            int foldEnd = (i + 1) * foldSize;
+            if (foldEnd > rows) {
+                foldEnd = rows;
+            }
+
+            Matrix toTrainFeatures = new Matrix(features);
+            Matrix toTrainLabels = new Matrix(labels);
+
+            Matrix toPredictFeatures = toTrainFeatures.removeFold(foldStart, foldEnd);
+            Matrix toPredictLabels = toTrainLabels.removeFold(foldStart, foldEnd);
+
+            BaselineLearner learner = new BaselineLearner();
+            learner.train(toTrainFeatures, toTrainLabels);
+            sum += learner.getAccuracy(toPredictFeatures, toPredictLabels);
+        }
+        return sum / rows;
     }
+
 }
