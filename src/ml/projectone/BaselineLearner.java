@@ -2,7 +2,6 @@ package ml.projectone;
 
 import ml.MLException;
 import ml.Matrix;
-import ml.MatrixReloaded;
 import ml.SupervisedLearner;
 
 import java.util.ArrayList;
@@ -11,24 +10,26 @@ import java.util.List;
 public class BaselineLearner extends SupervisedLearner {
 
     private List<Double> columnMeans = new ArrayList<Double>();
-    private MatrixReloaded features, labels;
+    private Matrix features, labels;
 
     @Override
-    public void train(Matrix featuress, Matrix labelss) {
+    public void train(Matrix features, Matrix labels) {
 
-        // TODO: fix this shit
-        MatrixReloaded features = new MatrixReloaded();
-        MatrixReloaded labels = new MatrixReloaded();
+        if (features.getNumRows() != labels.getNumRows()) {
+            throw new MLException("Features and labels must have the same number of rows.");
+        }
 
         this.features = features;
         this.labels = labels;
 
         for (int i = 0; i < labels.getNumCols(); i++) {
             if (labels.isCategorical(i)) {
-                throw new MLException("Cannot calculate mean for categorical column: "
-                        + labels.getColumnAttributes(i).getName());
+                //throw new MLException("Cannot calculate mean for categorical column: "
+                //        + labels.getColumnAttributes(i).getName());
+                columnMeans.add(labels.mostCommonValue(i));
+            } else {
+                columnMeans.add(labels.columnMean(i));
             }
-            columnMeans.add(labels.columnMean(i));
         }
     }
 
@@ -50,28 +51,19 @@ public class BaselineLearner extends SupervisedLearner {
         return out;
     }
 
-    /**
-     * @return Vector based SSE
-     */
-    @Override
-    public double getAccuracy() {
-        double sum = 0;
-        for (int i = 0; i < labels.getNumRows(); i++) {
-            List<Double> result = predict(features.getRow(i));
+    public static void nFoldCrossValidation(Matrix features, Matrix labels, int n) {
 
-            if (labels.getNumCols() != result.size()) {
-                throw new MLException("Returned result size is different than number of columns in labels!");
-            }
+        int rows = features.getNumRows();
 
-            double magnitude = 0;
-            for (int j = 0; j < labels.getNumCols(); j++) {
-                double res = labels.getRow(i).get(j) - result.get(j);
-                magnitude += res * res;
-
-            }
-            sum += magnitude;
+        if (n > rows) {
+            throw new MLException(String.format(
+                    "n [%d] must be <= row size [%d]", n, features.getNumRows()));
         }
-        return sum;
-    }
 
+        if (rows != labels.getNumRows()) {
+            throw new MLException("Features and labels rows mismatch");
+        }
+
+        int foldSize = rows % n == 0 ? rows / n : rows / n + 1;
+    }
 }
