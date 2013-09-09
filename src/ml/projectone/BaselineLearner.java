@@ -24,8 +24,6 @@ public class BaselineLearner extends SupervisedLearner {
 
         for (int i = 0; i < labels.getNumCols(); i++) {
             if (labels.isCategorical(i)) {
-                //throw new MLException("Cannot calculate mean for categorical column: "
-                //        + labels.getColumnAttributes(i).getName());
                 columnMeans.add(labels.mostCommonValue(i));
             } else {
                 columnMeans.add(labels.columnMean(i));
@@ -51,6 +49,13 @@ public class BaselineLearner extends SupervisedLearner {
         return out;
     }
 
+    /**
+     * Performs a n-fold cross validation and returns MSE of all samples
+     * @param features
+     * @param labels
+     * @param n
+     * @return MSE of all samples
+     */
     public static double nFoldCrossValidation(Matrix features, Matrix labels, int n) {
 
         int rows = features.getNumRows();

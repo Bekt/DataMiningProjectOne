@@ -10,9 +10,9 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        //if (args.length != 1) {
-        //    throw new IllegalArgumentException("Too few or too many arguments.");
-        //}
+        if (args.length != 1) {
+            throw new IllegalArgumentException("Too few or too many arguments.");
+        }
 
         final int featuresStart = 0;
         final int featuresEnd = 4;
@@ -21,7 +21,7 @@ public class Main {
         final int nFoldSize = 3;
         final int repetitions = 1000;
 
-        String filepath = "/Users/dev/workspace/DataMining2013F/iris.arff";
+        String filepath = args[0];
 
         Matrix matrix = ARFFParser.loadARFF(filepath);
         Matrix features = matrix.subMatrixCols(featuresStart, featuresEnd);
