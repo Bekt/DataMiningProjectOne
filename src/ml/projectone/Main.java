@@ -4,11 +4,12 @@ import ml.ARFFParser;
 import ml.Matrix;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Random;
 
 public class Main {
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
 
         if (args.length != 1) {
             throw new IllegalArgumentException("Too few or too many arguments.");
