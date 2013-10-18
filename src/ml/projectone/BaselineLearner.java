@@ -56,7 +56,7 @@ public class BaselineLearner extends SupervisedLearner {
      * @param n
      * @return MSE of all samples
      */
-    public static double nFoldCrossValidation(Matrix features, Matrix labels, int n) {
+    public double nFoldCrossValidation(Matrix features, Matrix labels, int n) {
 
         int rows = features.getNumRows();
 

@@ -31,9 +31,10 @@ public class Main {
         Random seed = new Random();
         double mseTotal = 0;
         for (int i = 0; i < repetitions; i++) {
+            BaselineLearner learner = new BaselineLearner();
             features.shuffle(seed);
             labels.shuffle(seed);
-            mseTotal += BaselineLearner.nFoldCrossValidation(features, labels, nFoldSize);
+            mseTotal += learner.nFoldCrossValidation(features, labels, nFoldSize);
         }
         System.out.println("MSE: " + mseTotal / repetitions);
     }
