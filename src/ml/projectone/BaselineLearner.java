@@ -9,7 +9,7 @@ import java.util.List;
 
 public class BaselineLearner extends SupervisedLearner {
 
-    private List<Double> columnMeans = new ArrayList<Double>();
+    private List<Double> columnMeans;
     private Matrix features, labels;
 
     @Override
@@ -21,6 +21,7 @@ public class BaselineLearner extends SupervisedLearner {
 
         this.features = features;
         this.labels = labels;
+        this.columnMeans = new ArrayList<Double>();
 
         for (int i = 0; i < labels.getNumCols(); i++) {
             if (labels.isCategorical(i)) {
@@ -47,48 +48,6 @@ public class BaselineLearner extends SupervisedLearner {
         }
 
         return out;
-    }
-
-    /**
-     * Performs a n-fold cross validation and returns MSE of all samples
-     * @param features
-     * @param labels
-     * @param n
-     * @return MSE of all samples
-     */
-    public double nFoldCrossValidation(Matrix features, Matrix labels, int n) {
-
-        int rows = features.getNumRows();
-
-        if (n > rows) {
-            throw new MLException(String.format(
-                    "n [%d] must be <= row size [%d]", n, features.getNumRows()));
-        }
-
-        if (rows != labels.getNumRows()) {
-            throw new MLException("Features and labels rows mismatch");
-        }
-
-        int foldSize = rows % n == 0 ? rows / n : rows / n + 1;
-        double sum = 0;
-        for (int i = 0; i < n; i++) {
-            int foldStart = i * foldSize;
-            int foldEnd = (i + 1) * foldSize;
-            if (foldEnd > rows) {
-                foldEnd = rows;
-            }
-
-            Matrix toTrainFeatures = new Matrix(features);
-            Matrix toTrainLabels = new Matrix(labels);
-
-            Matrix toPredictFeatures = toTrainFeatures.removeFold(foldStart, foldEnd);
-            Matrix toPredictLabels = toTrainLabels.removeFold(foldStart, foldEnd);
-
-            BaselineLearner learner = new BaselineLearner();
-            learner.train(toTrainFeatures, toTrainLabels);
-            sum += learner.getAccuracy(toPredictFeatures, toPredictLabels);
-        }
-        return sum / rows;
     }
 
 }
